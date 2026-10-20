@@ -39,6 +39,7 @@
     "y": 204.4
    },
    "fin": {
+    "periodEnd": "2026-03-28",
     "fy": "FY2026 (~2026-03-28)",
     "rev": 2663.6,
     "op": 251.8,
@@ -140,6 +141,7 @@
     "y": 387.5
    },
    "fin": {
+    "periodEnd": "2026-03-28",
     "fy": "FY2026 (~2026-03-28)",
     "rev": 2244.5,
     "op": 228.6,
@@ -535,6 +537,66 @@
      "scale": "200+ projects",
      "stage": "Completed (누적)",
      "src": "https://housinginnovation.co/factory/guerdon-modular/"
+    },
+    {
+     "name": "Eviva",
+     "city": "Sacramento",
+     "st": "CA",
+     "market": "Market-rate apartments",
+     "method": "Volumetric",
+     "scale": "n/a",
+     "stage": "포트폴리오 게시(시기 미확인)",
+     "src": "https://www.guerdonmodularbuildings.com/project/eviva-sacrament-ca/"
+    },
+    {
+     "name": "Cubix",
+     "city": "Seattle",
+     "st": "WA",
+     "market": "Micro-suite apartments",
+     "method": "Volumetric",
+     "scale": "n/a",
+     "stage": "포트폴리오 게시(시기 미확인)",
+     "src": "https://www.guerdonmodularbuildings.com/project/cubix-seattle-wa/"
+    },
+    {
+     "name": "Domain",
+     "city": "San Jose",
+     "st": "CA",
+     "market": "Apartment complex",
+     "method": "Volumetric",
+     "scale": "n/a",
+     "stage": "포트폴리오 게시(시기 미확인)",
+     "src": "https://www.guerdonmodularbuildings.com/project/domain-san-jose-ca/"
+    },
+    {
+     "name": "Cheecham Lodge",
+     "city": "Anzac",
+     "st": "AB",
+     "market": "Market-rate apartments",
+     "method": "Volumetric",
+     "scale": "n/a",
+     "stage": "포트폴리오 게시(시기 미확인)",
+     "src": "https://www.guerdonmodularbuildings.com/project/cheecham-lodge-anzac-ab/"
+    },
+    {
+     "name": "Home2 Suites",
+     "city": "San Francisco",
+     "st": "CA",
+     "market": "Hotel",
+     "method": "Volumetric",
+     "scale": "n/a",
+     "stage": "포트폴리오 게시(시기 미확인)",
+     "src": "https://www.guerdonmodularbuildings.com/project/home2-suites-sanfrancisco-ca/"
+    },
+    {
+     "name": "The Union Flats",
+     "city": "Union City",
+     "st": "CA",
+     "market": "Apartment community (4 buildings)",
+     "method": "Volumetric",
+     "scale": "n/a",
+     "stage": "포트폴리오 게시(시기 미확인)",
+     "src": "https://www.guerdonmodularbuildings.com/project/the-union-flats-union-city-ca/"
     }
    ],
    "confidence": "Medium",
@@ -816,13 +878,13 @@
     "Hospitality"
    ],
    "hq": {
-    "city": "Midwest (추정)",
-    "state": "IN",
-    "lat": 39.77,
-    "lon": -86.16,
-    "conf": "l",
-    "x": 646.4,
-    "y": 269.3
+    "city": "Minneapolis",
+    "state": "MN",
+    "lat": 44.98,
+    "lon": -93.27,
+    "conf": "v",
+    "x": 530.1,
+    "y": 167
    },
    "fin": null,
    "finStatus": "Private financials generally not public",
@@ -832,13 +894,21 @@
     "note": "미확인"
    },
    "fac": {
-    "count": null,
-    "conf": null,
-    "summary": "공장 정보 미확인(업데이트 대기). 엑셀 비고: Official project page lists multiple projects; verify current company status and plant data",
-    "list": []
+    "count": "1",
+    "conf": "v",
+    "summary": "공식 사이트 푸터: 본사 Minneapolis, MN / 제조시설 Owatonna, MN. 면적·생산능력은 미공개.",
+    "list": [
+     {
+      "name": "Owatonna, MN (RISE Manufacturing Facility)",
+      "lat": 44.08,
+      "lon": -93.23,
+      "x": 531.2,
+      "y": 185.9
+     }
+    ]
    },
    "xlFac": [],
-   "overview": "모듈러 제조·설치·GC 서비스를 일괄 제공하는 볼류메트릭 업체. 공식 포트폴리오에 호텔·학생주택·멀티패밀리 6건이 게시(미주리·위스콘신·콜로라도 등). 법인 현황·공장 데이터 검증 필요.",
+   "overview": "모듈러 제조·설치·GC 서비스를 일괄 제공하는 미네소타 기반 볼류메트릭 업체. 공식 포트폴리오에 호텔·학생주택·멀티패밀리 6건이 게시(미주리·위스콘신·콜로라도 등). 법인 현황 검증 필요.",
    "portfolio": [
     "Multifamily",
     "Student housing",
@@ -1014,37 +1084,51 @@
     "Emergency housing"
    ],
    "hq": {
-    "city": "Las Vegas",
+    "city": "North Las Vegas",
     "state": "NV",
-    "lat": 36.17,
-    "lon": -115.14,
-    "conf": "e",
-    "x": 171.3,
-    "y": 321.4
+    "lat": 36.2,
+    "lon": -115.12,
+    "conf": "v",
+    "x": 171.7,
+    "y": 320.8
    },
    "fin": null,
    "finStatus": "Private financials generally not public",
    "emp": {
-    "v": null,
-    "conf": null,
-    "note": "미확인"
+    "v": "128",
+    "conf": "v",
+    "note": "FY2025 10-K: 2025-12-31 기준 128명 (전년 167명)"
    },
    "fac": {
-    "count": "1",
-    "conf": "e",
-    "summary": "North Las Vegas, NV 대형 공장(발표 생산능력 vs 실제 출하량 구분 필요).",
+    "count": "3",
+    "conf": "v",
+    "summary": "FY2025 10-K: North Las Vegas 임차 공장 3개(약 42만 sq ft). 발표 capacity와 실제 인도량(2025년 Casita 23대/15개 고객) 구분 필요.",
     "list": [
      {
-      "name": "North Las Vegas, NV",
+      "name": "North Las Vegas, NV – Factory 1 (5345 E. N. Belt Rd)",
       "lat": 36.2,
       "lon": -115.12,
       "x": 171.7,
       "y": 320.8
+     },
+     {
+      "name": "North Las Vegas, NV – Factory 2",
+      "lat": 36.2,
+      "lon": -115.115,
+      "x": 171.8,
+      "y": 320.8
+     },
+     {
+      "name": "North Las Vegas, NV – Factory 3",
+      "lat": 36.205,
+      "lon": -115.12,
+      "x": 171.7,
+      "y": 320.7
      }
     ]
    },
    "xlFac": [],
-   "overview": "접이식(foldable) 볼류메트릭 모듈 \"Casita\"를 대량생산하려는 네바다 기반 스타트업. ADU·단독주택·재난주택 타깃. 발표 capacity와 실제 인도량이 다르므로 해석 주의.",
+   "overview": "접이식(foldable) 볼류메트릭 모듈 \"Casita\"를 대량생산하려는 네바다 기반 업체. 비상장이지만 SEC에 10-K를 제출하는 보고 기업이라 재무·직원·시설 공시가 가능. ADU·단독주택·재난주택 타깃.",
    "portfolio": [
     "Single-family",
     "ADU",
@@ -1055,7 +1139,7 @@
    "confidence": "Medium",
    "url": "https://www.boxabl.com/",
    "notes": "Distinguish announced capacity from realized output and deliveries",
-   "extra": null,
+   "extra": "SEC 보고기업(CIK 1816937). 2025년 인도 Casita 23대로 발표 capacity 대비 실적이 작음.",
    "finNote": null
   },
   {
@@ -1918,6 +2002,7 @@
     "y": 264.6
    },
    "fin": {
+    "periodEnd": "2025-12-31",
     "fy": "FY2025 (CY2025)",
     "rev": 944.2,
     "op": 243.6,
@@ -1992,6 +2077,7 @@
     "y": 386.6
    },
    "fin": {
+    "periodEnd": "2025-12-31",
     "fy": "FY2025 (CY2025)",
     "rev": 2281.4,
     "op": 181.5,
@@ -2721,6 +2807,7 @@
     "y": 546.2
    },
    "fin": {
+    "opLabel": "영업이익(산출)",
     "fy": "FY2025 (~2025-11-30)",
     "rev": 34186.9,
     "op": 2896.4,
@@ -2729,8 +2816,7 @@
     "conf": "v",
     "src": "https://www.sec.gov/Archives/edgar/data/920760/000162828025057408/ex991-20251130x8kq4.htm",
     "note": "영업이익은 세그먼트 합계(주택 3,015.3+금융 612.5+멀티패밀리 −75.5+기타 −19.1)에서 본사 G&A 636.7을 차감한 산출치(재단 기부금 제외). 직접 공시 합계 아님.",
-    "margin": 8.5,
-    "opLabel": "영업이익"
+    "margin": 8.5
    },
    "finStatus": "Public filings available",
    "emp": {
@@ -2793,6 +2879,7 @@
     "y": 425.8
    },
    "fin": {
+    "periodEnd": "2025-09-30",
     "fy": "FY2025 (~2025-09-30)",
     "rev": 34250.4,
     "op": 4739.9,
@@ -2864,6 +2951,7 @@
     "y": 392.4
    },
    "fin": {
+    "periodEnd": "2025-12-31",
     "fy": "FY2025 (CY2025)",
     "rev": 17312,
     "op": 2911.3,
@@ -2935,6 +3023,7 @@
     "y": 265.1
    },
    "fin": {
+    "periodEnd": "2025-12-31",
     "fy": "FY2025 (CY2025)",
     "rev": 10324,
     "op": 1761.9,
@@ -3271,5 +3360,5 @@
    "Caveat": "Forecast, not observed growth"
   }
  ],
- "generatedAt": "2026-10-16T07:31:43.575078+00:00"
+ "generatedAt": "2026-10-20T07:11:32.091244+00:00"
 }

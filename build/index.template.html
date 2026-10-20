@@ -91,7 +91,7 @@ select{border:1px solid var(--line2);border-radius:10px;padding:9px 10px;font:in
 .met b{font-size:14px;letter-spacing:-.01em}
 .met b.na{color:#a3adbd;font-weight:500}
 .badge{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;margin-left:5px;vertical-align:1px}
-.badge.v{background:var(--ok-bg);color:var(--ok)} .badge.e{background:var(--warn-bg);color:var(--warn)} .badge.n{background:var(--na-bg);color:var(--na)}
+.badge.v{background:var(--ok-bg);color:var(--ok)} .badge.e{background:var(--warn-bg);color:var(--warn)} .badge.a{background:#efe9ff;color:#6d3fd1}.alertbox{background:#fff1f0;border:1px solid #ffd3cf;color:#a1271b;border-radius:12px;padding:10px 14px;margin-top:12px;font-size:13px}.alertbox a{color:#a1271b;text-decoration:underline}.cardwarn{display:inline-block;margin-top:8px;font-size:11.5px;color:#a1271b;background:#fff1f0;border-radius:999px;padding:2px 9px}.news{list-style:none;margin:0;padding:0}.news li{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:12px}.news li:last-child{border:0}.news time{color:var(--ink3);font-size:12px;white-space:nowrap;min-width:78px}.news a{color:var(--ink);font-weight:500}.news a:hover{color:var(--accent)}.news small{color:var(--ink3);display:block}.badge.n{background:var(--na-bg);color:var(--na)}
 .empty{grid-column:1/-1;text-align:center;color:var(--ink3);padding:60px 0}
 /* detail */
 .crumb{display:flex;align-items:center;gap:10px;margin:20px 0 6px;font-size:13px;color:var(--ink2)}
@@ -140,7 +140,7 @@ footer{border-top:1px solid var(--line);color:var(--ink3);font-size:12px;padding
 <header class="top"><div class="wrap">
   <a class="brand" href="#/"><span class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>US Modular Housing Intelligence</a>
   <span class="sp"></span>
-  <div class="upd"><span class="dot"></span><div><span id="updAt">데이터 기준일 -</span><small id="updNext">자동 갱신: 매일 00:01 (KST)</small></div></div>
+  <div class="upd"><span class="dot"></span><div><span id="updAt">데이터 기준일 -</span><small id="updNext">자동 갱신: 매일 00:00 (KST)</small></div></div>
 </div></header>
 <main id="app" class="wrap" aria-live="polite"></main>
 <footer><div class="wrap">미국 모듈러 업체 동향 대시보드 · 모든 수치는 출처 URL 기준이며 <b>공시확인</b>/<b>추정</b>/<b>미확인</b>으로 구분 표기합니다. 공란은 0이 아니라 "미확인/비공개"를 의미합니다. 외부 공개 전 원문 검증이 필요합니다.</div></footer>
@@ -187,6 +187,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const fmtM=v=>v==null?null:(Math.abs(v)>=1000?'$'+(v/1000).toFixed(v>=10000?1:2)+'B':'$'+Math.round(v).toLocaleString()+'M');
 const fmtP=v=>v==null?null:v.toFixed(1)+'%';
+const autoB=x=>x&&x.auto?`<span class="badge a" title="자동수집: ${esc(x.auto.src||'')} ${esc((x.auto.at||'').slice(0,10))}">자동</span>`:'';
 const badge=c=>c==='v'?'<span class="badge v">공시확인</span>':c==='e'?'<span class="badge e">추정</span>':'';
 const initials=n=>{const w=n.replace(/[^A-Za-z ]/g,'').trim().split(/\s+/);return (w[0]||'?')[0]+(w[1]?w[1][0]:'')};
 let D=window.__DATA__, STATES=window.__STATES__, loadedAt=null;
@@ -267,7 +268,7 @@ function cardHTML(c){
     <div class="hd"><div class="av" style="background:${col}">${esc(initials(c.name))}</div><div><h3>${esc(c.name)}</h3><div class="legal">${esc(c.legal)} · ${esc(c.ownership||'')}</div></div></div>
     <div class="tags">${c.roles.map(r=>`<span class="tag role" style="--c:${ROLE_C[r]}">${ROLE_KO[r]}</span>`).join('')}${typeTags(c).map(t=>`<span class="tag type">${t}</span>`).join('')}</div>
     <div class="tags" style="margin-top:6px">${(c.regions||[]).slice(0,5).map(r=>`<span class="tag reg">${REG_KO[r]||r}</span>`).join('')}</div>
-    <p class="desc">${esc(c.overview)}</p>
+    <p class="desc">${esc(c.overview)}</p>${(c.alerts||[]).length?'<span class="cardwarn">⚠ 상태 확인 필요</span>':''}
     <div class="mets">${m('최근 매출',f&&fmtM(f.rev),f&&f.conf)}${m(f&&f.opLabel==='영업이익'||!f?'영업이익률':'이익률(대용)',f&&fmtP(f.margin),f&&f.conf)}${m('직원',c.emp.v&&esc(c.emp.v),c.emp.conf)}${m('생산시설',c.fac.count&&esc(c.fac.count),c.fac.conf)}</div>
   </a>`;
 }
@@ -317,12 +318,12 @@ const SRC_MAP={USM001:['SRC005','SRC008'],USM002:['SRC003','SRC004'],USM008:['SR
 function renderDetail(id){
   const c=D.companies.find(x=>x.id===id); if(!c){location.hash='#/';return;}
   const f=c.fin, col=color(c);
-  const tile=(l,v,conf,sub)=>`<div class="tile"><span>${l}${badge(conf)}</span>${v?`<b>${v}</b>`:'<b class="na">미확인</b>'}${sub?`<small>${sub}</small>`:''}</div>`;
+  const tile=(l,v,conf,sub,au)=>`<div class="tile"><span>${l}${badge(conf)}${autoB(au)}</span>${v?`<b>${v}</b>`:'<b class="na">미확인</b>'}${sub?`<small>${sub}</small>`:''}</div>`;
   const srcs=(SRC_MAP[id]||[]).map(s=>(D.sources||[]).find(x=>x.SourceID===s)).filter(Boolean);
   const fin=f?`<div class="tw"><table><thead><tr><th>회계기간</th><th>매출</th><th>${esc(f.opLabel||'영업이익')}</th><th>이익률</th><th>영업현금흐름</th><th>Capex</th><th>출처</th></tr></thead><tbody><tr>
     <td>${esc(f.fy)}</td><td>${fmtM(f.rev)||'-'}</td><td>${fmtM(f.op)||'-'}</td><td>${fmtP(f.margin)||'-'}</td><td>${fmtM(f.cfo)||'-'}</td><td>${fmtM(f.capex)||'-'}</td><td><a href="${esc(f.src)}" target="_blank" rel="noopener" style="color:var(--accent)">링크↗</a></td></tr></tbody></table></div>${f.note?`<div class="note">${esc(f.note)}</div>`:''}`
     :`<div class="note warn">${esc(c.finStatus||'재무 데이터 미확인')} — 비공개/미확인 항목은 0이 아닌 공란으로 표시합니다. ${c.finNote?esc(c.finNote):''}</div>`;
-  const projs=c.projects.length?`<div class="tw"><table><thead><tr><th>프로젝트</th><th>위치</th><th>시장</th><th>방식</th><th>규모</th><th>단계</th></tr></thead><tbody>${c.projects.map(p=>`<tr><td><b>${p.src?`<a href="${esc(p.src)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(p.name)}↗</a>`:esc(p.name)}</b>${p.note?`<div style="color:var(--ink3);font-size:12px;margin-top:2px">${esc(p.note)}</div>`:''}</td><td>${esc([p.city,p.st].filter(x=>x&&x!=='-').join(', '))||'-'}</td><td>${esc(p.market||'-')}</td><td>${esc(p.method||'-')}</td><td>${esc(p.scale||'-')}</td><td>${esc(p.stage||'-')}</td></tr>`).join('')}</tbody></table></div>`
+  const projs=c.projects.length?`<div class="tw"><table><thead><tr><th>프로젝트</th><th>위치</th><th>시장</th><th>방식</th><th>규모</th><th>단계</th></tr></thead><tbody>${c.projects.map(p=>`<tr><td><b>${p.src?`<a href="${esc(p.src)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(p.name)}↗</a>`:esc(p.name)}</b>${p.note?`<div style="color:var(--ink3);font-size:12px;margin-top:2px">${esc(p.note)}</div>`:''}</td><td>${esc([p.city,p.st].filter(x=>x&&x!=='-').join(', '))||'-'}</td><td>${esc(p.market||'-')}</td><td>${esc(p.method||'-')}</td><td>${esc(p.scale||'-')}</td><td>${esc(p.stage||'-')}${p.auto?' <span class="badge a">자동</span>':''}</td></tr>`).join('')}</tbody></table></div>`
     :`<div class="note">수집된 프로젝트 이력이 아직 없습니다(사업시행·발주·공사중 구분은 확인 후 반영). 공식 사이트: <a href="${esc(c.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(c.url)}</a></div>`;
   const facRows=(c.fac.list||[]);
   const facHTML=`<p style="margin:0 0 10px;color:var(--ink2)">${esc(c.fac.summary||'')}</p>
@@ -333,24 +334,26 @@ function renderDetail(id){
   <div class="crumb"><button class="back" id="back">← 전체 기업</button><span>${esc(roleName(c))} · ${esc(c.id)}</span></div>
   <div class="dhead"><div class="av" style="background:${col}">${esc(initials(c.name))}</div><div><h1>${esc(c.name)}</h1><div style="color:var(--ink2)">${esc(c.legal)} · ${esc(c.ownership||'')}${c.hq?' · '+esc(c.hq.city)+(c.hq.state&&c.hq.state!=='--'?', '+esc(c.hq.state):''):''}${c.hq&&c.hq.conf==='l'?' <span class="badge e">위치 추정</span>':''}</div></div></div>
   <div class="tags">${c.roles.map(r=>`<span class="tag role" style="--c:${ROLE_C[r]}">${ROLE_FULL[r]}</span>`).join('')}${typeTags(c).map(t=>`<span class="tag type">${t}</span>`).join('')}${(c.regions||[]).map(r=>`<span class="tag reg">${REG_KO[r]||r}</span>`).join('')}</div>
-  <nav class="subnav">${[['ov','개요'],['sz','규모'],['fn','공시자료'],['pj','프로젝트'],['pf','포트폴리오'],['mt','모듈러 타입'],['fc','생산시설'],['sr','출처']].map(([k,l])=>`<a href="#/c/${c.id}" data-go="${k}">${l}</a>`).join('')}</nav>
+  ${(c.alerts||[]).length?`<div class="alertbox"><b>⚠ 상태 확인 필요</b><ul class="ul" style="color:inherit;margin:4px 0 0">${c.alerts.map(a=>`<li><a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.title)}</a> <span style="opacity:.7">${esc(a.date||'')}</span></li>`).join('')}</ul></div>`:''}
+  <nav class="subnav">${[['ov','개요'],['sz','규모'],['fn','공시자료'],['pj','프로젝트'],['nw','동향'],['pf','포트폴리오'],['mt','모듈러 타입'],['fc','생산시설'],['sr','출처']].map(([k,l])=>`<a href="#/c/${c.id}" data-go="${k}">${l}</a>`).join('')}</nav>
   <div class="dgrid"><div>
     <section class="panel" id="ov"><h2>기업 개요 및 설명</h2><p style="margin:0">${esc(c.overview)}</p>${c.extra?`<div class="note">${esc(c.extra)}</div>`:''}${c.notes?`<div class="note">리서치 메모(엑셀): ${esc(c.notes)}</div>`:''}
       <dl class="kv" style="margin-top:14px"><dt>구분</dt><dd>${c.roles.map(r=>ROLE_FULL[r]).join(' · ')}</dd><dt>사업 지역</dt><dd>${(c.regions||[]).map(r=>REG_KO[r]||r).join(' · ')}${c.regionsRaw?` <span style="color:var(--ink3)">(원문: ${esc(c.regionsRaw)})</span>`:''}</dd><dt>소유 형태</dt><dd>${esc(c.ownership||'-')}</dd><dt>엑셀 신뢰도</dt><dd>${esc(c.confidence||'-')}</dd>${c.brands&&c.brands.length?`<dt>주요 브랜드</dt><dd>${c.brands.map(esc).join(', ')}</dd>`:''}</dl></section>
     <section class="panel" id="sz"><h2>규모</h2><div class="tiles">
-      ${tile('최근 매출',f&&fmtM(f.rev),f&&f.conf,f&&esc(f.fy))}
+      ${tile('최근 매출',f&&fmtM(f.rev),f&&f.conf,f&&esc(f.fy),f)}
       ${tile(f&&f.opLabel&&f.opLabel!=='영업이익'?'이익률(대용)':'영업이익률',f&&fmtP(f.margin),f&&f.conf,f&&f.op!=null?esc(f.opLabel||'영업이익')+' '+fmtM(f.op):'')}
       ${tile('영업현금흐름',f&&fmtM(f.cfo),f&&f.cfo!=null?f.conf:null,f&&f.capex!=null?'Capex '+fmtM(f.capex):'')}
-      ${tile('직원 규모',c.emp.v&&esc(c.emp.v),c.emp.conf,esc(c.emp.note||''))}
-      ${tile('생산시설',c.fac.count&&esc(c.fac.count),c.fac.conf,'')}
+      ${tile('직원 규모',c.emp.v&&esc(c.emp.v),c.emp.conf,esc(c.emp.note||''),c.emp)}
+      ${tile('생산시설',c.fac.count&&esc(c.fac.count),c.fac.conf,'',c.fac)}
       ${tile('프로젝트 기록',String(c.projects.length)+'건',null,'수집 기준')}</div></section>
     <section class="panel" id="fn"><h2>공시자료</h2>${fin}<dl class="kv" style="margin-top:12px"><dt>공시 상태</dt><dd>${esc(c.finStatus||'-')}</dd></dl></section>
     <section class="panel" id="pj"><h2>프로젝트 정보</h2>${projs}</section>
+    <section class="panel" id="nw"><h2>최근 동향 (자동수집 보도)</h2>${(c.news||[]).length?`<ul class="news">${c.news.map(n=>`<li><time>${esc(n.date||'')}</time><div><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}↗</a><small>${esc(n.source||'')}${(n.tags||[]).map(x=>' · '+({project:'프로젝트',facility:'시설',status:'상태변화'}[x]||x)).join('')}</small></div></li>`).join('')}</ul><div class="note">GDELT/뉴스 피드·공식 피드에서 자동 수집한 제목입니다. 내용 검증 전 정보이므로 원문을 확인하세요.</div>`:'<div class="note">수집된 최근 보도가 없습니다. (매일 자동 수집)</div>'}</section>
     <section class="panel" id="pf"><h2>포트폴리오</h2><div class="tags" style="margin:0 0 10px">${(c.portfolio||[]).map(p=>`<span class="tag type">${esc(p)}</span>`).join('')||'-'}</div><dl class="kv"><dt>엔드마켓</dt><dd>${(c.endMarkets||[]).map(esc).join(' · ')||'-'}</dd><dt>사업 역할(원문)</dt><dd>${esc(c.rolesRaw||'-')}</dd></dl></section>
     <section class="panel" id="mt"><h2>모듈러 타입 정보</h2><div class="tags" style="margin:0 0 10px">${typeTags(c).map(t=>`<span class="tag type" style="font-size:12.5px">${t}</span>`).join('')}</div><dl class="kv"><dt>제조 방식(원문)</dt><dd>${esc(c.methodRaw||(c.types||[]).join('; ')||'-')}</dd><dt>세부 분류</dt><dd>${(c.types||[]).map(esc).join(' · ')}</dd></dl>
       <div class="note">HUD-code 제조주택은 주/지방 건축법을 따르는 모듈러와 규제 체계가 다르므로 구분해 읽어야 합니다.</div></section>
     <section class="panel" id="fc"><h2>생산시설 정보</h2>${facHTML}</section>
-    <section class="panel" id="sr"><h2>출처</h2><ul class="srcs"><li><div><small>공식/1차 출처</small><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.url)}</a></div></li>${f&&f.src?`<li><div><small>재무 출처</small><a href="${esc(f.src)}" target="_blank" rel="noopener">${esc(f.src)}</a></div></li>`:''}${srcs.map(s=>`<li><div><small>${esc(s.SourceTitle)} · ${esc(s.PublicationOrPeriod)}</small><a href="${esc(s.URL)}" target="_blank" rel="noopener">${esc(s.URL)}</a><small>${esc(s.Caveat||'')}</small></div></li>`).join('')}</ul></section>
+    <section class="panel" id="sr"><h2>출처</h2><ul class="srcs"><li><div><small>공식/1차 출처</small><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.url)}</a></div></li>${c.emp&&c.emp.src?`<li><div><small>직원 수 출처${c.emp.auto?' (자동수집)':''}</small><a href="${esc(c.emp.src)}" target="_blank" rel="noopener">${esc(c.emp.src)}</a></div></li>`:''}${c.fac&&c.fac.src?`<li><div><small>생산시설 출처${c.fac.auto?' (자동수집)':''}</small><a href="${esc(c.fac.src)}" target="_blank" rel="noopener">${esc(c.fac.src)}</a></div></li>`:''}${f&&f.src?`<li><div><small>재무 출처</small><a href="${esc(f.src)}" target="_blank" rel="noopener">${esc(f.src)}</a></div></li>`:''}${srcs.map(s=>`<li><div><small>${esc(s.SourceTitle)} · ${esc(s.PublicationOrPeriod)}</small><a href="${esc(s.URL)}" target="_blank" rel="noopener">${esc(s.URL)}</a><small>${esc(s.Caveat||'')}</small></div></li>`).join('')}</ul></section>
   </div>
   <aside><div class="minimap"><section class="panel"><h2>위치 · 사업영역</h2><div class="mapcard" style="box-shadow:none"><div id="dMap"></div></div>
     <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--ink2)"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${col};margin-right:5px"></i>본사/소재지</span><span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#16202e;margin-right:5px"></i>공장(개별 확인분)</span><span><i style="display:inline-block;width:12px;height:9px;background:${col}38;border:1px solid ${col}66;margin-right:5px"></i>사업 지역</span></div>
@@ -370,15 +373,15 @@ function route(){
 }
 window.addEventListener('hashchange',route);
 
-/* ---------- 일일 자동 업데이트 (매일 00:01 KST) ---------- */
+/* ---------- 일일 자동 업데이트 (매일 00:00 KST) ---------- */
 function kstParts(d){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});return p;}
-function msToNext(){ // 다음 00:01 KST까지 ms (KST=UTC+9, DST 없음)
-  const now=Date.now(), k=now+9*3600e3, day=Math.floor(k/86400e3)*86400e3; let t=day+60e3; if(t<=k) t+=86400e3; return t-k;
+function msToNext(){ // 다음 00:00 KST까지 ms (KST=UTC+9, DST 없음)
+  const now=Date.now(), k=now+9*3600e3, day=Math.floor(k/86400e3)*86400e3; let t=day; if(t<=k) t+=86400e3; return t-k;
 }
 function setHeader(){
   const g=(D&&D.generatedAt)||loadedAt; const el=$('#updAt');
   el.textContent='데이터 기준: '+(g?new Date(g).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'})+' KST':'내장 데이터');
-  const m=Math.round(msToNext()/60000); $('#updNext').textContent=`자동 갱신: 매일 00:01 (KST) · 다음까지 ${Math.floor(m/60)}시간 ${m%60}분`;
+  const m=Math.round(msToNext()/60000); $('#updNext').textContent=`자동 갱신: 매일 00:00 (KST) · 다음까지 ${Math.floor(m/60)}시간 ${m%60}분`;
 }
 async function refreshData(){
   try{

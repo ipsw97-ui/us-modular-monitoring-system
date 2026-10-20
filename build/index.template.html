@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>US Modular Housing Intelligence</title>
+<style>
+:root{
+  --bg:#ffffff; --surface:#ffffff; --soft:#f6f8fb; --soft2:#eef2f7; --line:#e6eaf0; --line2:#d6dce6;
+  --ink:#16202e; --ink2:#4a5668; --ink3:#8793a6; --accent:#2f6bff; --accent-soft:#eaf0ff;
+  --ok:#16a34a; --ok-bg:#e9f8ef; --warn:#b45309; --warn-bg:#fff4e0; --na:#6b7686; --na-bg:#eef1f5;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.05);
+  --shadow-h:0 2px 4px rgba(16,24,40,.06),0 10px 28px rgba(47,107,255,.13);
+  --r:16px;
+  --c-provider:#2f6bff; --c-panel:#0d9488; --c-developer:#d97706; --c-builder:#7c3aed; --c-gc:#dc2626; --c-lessor:#64748b; --c-tech:#db2777; --c-dealer:#0284c7;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Pretendard','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+/* top bar */
+.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:58px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;font-size:15px}
+.logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#2f6bff,#6aa0ff);display:grid;place-items:center;color:#fff}
+.top .sp{flex:1}
+.upd{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:8px;text-align:right}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px #16a34a22}
+.upd small{display:block;color:var(--ink3);font-size:11px}
+/* hero + map */
+.hero{padding:22px 0 8px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.hero h1{margin:0;font-size:24px;letter-spacing:-.02em;font-weight:750}
+.hero p{margin:4px 0 0;color:var(--ink2);font-size:13px}
+.kpis{display:flex;gap:10px;flex-wrap:wrap}
+.kpi{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:112px}
+.kpi b{display:block;font-size:18px;letter-spacing:-.01em}
+.kpi span{font-size:11px;color:var(--ink3)}
+.mapcard{position:relative;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#fbfcfe,#f4f7fb);box-shadow:var(--shadow);overflow:hidden}
+.mapcard svg{display:block;width:100%;height:auto}
+.st{fill:#e9eef5;stroke:#fff;stroke-width:1;transition:fill .15s}
+.st.on{fill:var(--hl,#cfe0ff)}
+.st.dim{fill:#f0f3f8}
+.mk{cursor:pointer}
+.mk circle.core{stroke:#fff;stroke-width:2;transition:r .12s}
+.mk circle.ring{fill:none;stroke-width:1.5;opacity:.35}
+.mk.low circle.ring{stroke-dasharray:3 3;opacity:.8}
+.mk:hover circle.core,.mk.act circle.core{r:9}
+.mk.fade{opacity:.18}
+.fmk{pointer-events:all}
+.fmk rect{stroke:#fff;stroke-width:1}
+.legend{position:absolute;left:14px;bottom:12px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px 14px;max-width:calc(100% - 28px);font-size:11.5px;color:var(--ink2)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.mapnote{position:absolute;right:14px;top:12px;font-size:11px;color:var(--ink3);background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:10px;padding:5px 10px}
+.tip{position:absolute;z-index:10;pointer-events:none;width:290px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(16,24,40,.16);padding:12px 14px;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;font-size:12.5px}
+.tip.show{opacity:1;transform:none}
+.tip h4{margin:0 0 2px;font-size:14px;letter-spacing:-.01em}
+.tip .sub{color:var(--ink3);font-size:11.5px;margin-bottom:8px}
+.tip dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
+.tip dt{color:var(--ink3)} .tip dd{margin:0;font-weight:600}
+.tip .go{margin-top:8px;color:var(--accent);font-weight:600;font-size:11.5px}
+/* toolbar */
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:22px 0 14px}
+.bar .grow{flex:1}
+input.q{border:1px solid var(--line2);border-radius:10px;padding:9px 12px 9px 34px;min-width:230px;font:inherit;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238793a6' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='M11 11l4 4'/%3E%3C/svg%3E") 11px 50% no-repeat}
+input.q:focus,select:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select{border:1px solid var(--line2);border-radius:10px;padding:9px 10px;font:inherit;background:#fff;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line2);background:#fff;color:var(--ink2);border-radius:999px;padding:5px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.grp>label{font-size:12px;color:var(--ink3);min-width:62px}
+.cnt{font-size:12.5px;color:var(--ink2)}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding-bottom:60px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 16px;box-shadow:var(--shadow);transition:box-shadow .15s,transform .15s,border-color .15s;position:relative;scroll-margin-top:80px}
+.card:hover,.card.act{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:#c9d8ff}
+.card .hd{display:flex;gap:12px;align-items:flex-start}
+.av{width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px}
+.card h3{margin:0;font-size:16px;letter-spacing:-.01em;line-height:1.25}
+.card .legal{color:var(--ink3);font-size:12px;margin-top:1px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.tag{font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--soft2);color:var(--ink2);border:1px solid transparent;white-space:nowrap}
+.tag.role{background:color-mix(in srgb,var(--c) 11%,#fff);color:var(--c);border-color:color-mix(in srgb,var(--c) 22%,#fff);font-weight:600}
+.tag.type{background:#fff;border-color:var(--line2)}
+.tag.reg{background:var(--accent-soft);color:#2652c9}
+.desc{margin:10px 0 0;color:var(--ink2);font-size:13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.met span{display:block;font-size:11px;color:var(--ink3)}
+.met b{font-size:14px;letter-spacing:-.01em}
+.met b.na{color:#a3adbd;font-weight:500}
+.badge{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;margin-left:5px;vertical-align:1px}
+.badge.v{background:var(--ok-bg);color:var(--ok)} .badge.e{background:var(--warn-bg);color:var(--warn)} .badge.n{background:var(--na-bg);color:var(--na)}
+.empty{grid-column:1/-1;text-align:center;color:var(--ink3);padding:60px 0}
+/* detail */
+.crumb{display:flex;align-items:center;gap:10px;margin:20px 0 6px;font-size:13px;color:var(--ink2)}
+.back{border:1px solid var(--line2);border-radius:10px;padding:6px 12px;background:#fff;font-weight:600;cursor:pointer;font:inherit;font-weight:600}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.dhead{display:flex;gap:16px;align-items:center;margin:10px 0 4px;flex-wrap:wrap}
+.dhead .av{width:56px;height:56px;border-radius:16px;font-size:22px}
+.dhead h1{margin:0;font-size:26px;letter-spacing:-.02em}
+.subnav{position:sticky;top:58px;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin:16px 0 0;display:flex;gap:4px;overflow-x:auto;padding:6px 0}
+.subnav a{padding:7px 13px;border-radius:999px;color:var(--ink2);font-size:13px;white-space:nowrap}
+.subnav a:hover{background:var(--soft2)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;margin-top:18px}
+.panel{border:1px solid var(--line);border-radius:var(--r);background:#fff;box-shadow:var(--shadow);padding:20px;margin-bottom:18px;scroll-margin-top:120px}
+.panel h2{margin:0 0 12px;font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.panel h2::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile span{font-size:11.5px;color:var(--ink3);display:block}
+.tile b{font-size:21px;letter-spacing:-.02em}
+.tile b.na{color:#a3adbd;font-weight:500;font-size:17px}
+.tile small{display:block;color:var(--ink3);font-size:11px;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-weight:600;color:var(--ink3);text-align:left;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+.note{background:var(--soft);border-radius:10px;padding:10px 12px;color:var(--ink2);font-size:12.5px;margin-top:10px}
+.note.warn{background:var(--warn-bg);color:#7c4a03}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;margin:0}
+.kv dt{color:var(--ink3)} .kv dd{margin:0}
+.srcs{list-style:none;margin:0;padding:0}
+.srcs li{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.srcs li:last-child{border:0}
+.srcs a{color:var(--accent);word-break:break-all;font-size:12.5px}
+.srcs small{color:var(--ink3);display:block}
+.ul{margin:0;padding-left:18px;color:var(--ink2)}
+.minimap{position:sticky;top:116px}
+footer{border-top:1px solid var(--line);color:var(--ink3);font-size:12px;padding:22px 0 40px}
+@media(max-width:860px){.dgrid{grid-template-columns:1fr}.minimap{position:static}.tiles{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.wrap{padding:0 14px}.grid{gap:10px}.card{padding:14px}.mets{grid-template-columns:repeat(2,1fr)}.desc{-webkit-line-clamp:2}.legend{position:static;border:0;border-top:1px solid var(--line);border-radius:0;max-width:none}.mapnote{display:none}.hero h1{font-size:20px}.upd small{display:none}.card h3{font-size:14px}.av{width:34px;height:34px}.tag{font-size:10.5px}}
+@media(max-width:430px){.grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/"><span class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>US Modular Housing Intelligence</a>
+  <span class="sp"></span>
+  <div class="upd"><span class="dot"></span><div><span id="updAt">데이터 기준일 -</span><small id="updNext">자동 갱신: 매일 00:01 (KST)</small></div></div>
+</div></header>
+<main id="app" class="wrap" aria-live="polite"></main>
+<footer><div class="wrap">미국 모듈러 업체 동향 대시보드 · 모든 수치는 출처 URL 기준이며 <b>공시확인</b>/<b>추정</b>/<b>미확인</b>으로 구분 표기합니다. 공란은 0이 아니라 "미확인/비공개"를 의미합니다. 외부 공개 전 원문 검증이 필요합니다.</div></footer>
+
+<script>
+/*DATA_START*/window.__DATA__ = /*DATA_JSON*/null;/*DATA_END*/
+window.__STATES__ = /*STATES_JSON*/null;
+</script>
+<script>
+(function(){
+'use strict';
+const ROLE_C = {provider:'#2f6bff',panel:'#0d9488',developer:'#d97706',builder:'#7c3aed',gc:'#dc2626',lessor:'#64748b',tech:'#db2777',dealer:'#0284c7'};
+const ROLE_KO = {provider:'제조·공급',panel:'패널 공급',developer:'개발사',builder:'빌더',gc:'종합건설(GC)',lessor:'임대·리스',tech:'기술',dealer:'딜러·유통'};
+const ROLE_FULL = {provider:'제조·공급(Provider)',panel:'패널 공급(Panelized)',developer:'개발사(Developer)',builder:'빌더(Builder)',gc:'종합건설(GC)',lessor:'임대·리스(Relocatable)',tech:'기술(Tech)',dealer:'딜러·유통(Dealer)'};
+const ALL = 'AL AR AZ CA CO CT DC DE FL GA IA ID IL IN KS KY LA MA MD ME MI MN MO MS MT NC ND NE NH NJ NM NV NY OH OK OR PA RI SC SD TN TX UT VA VT WA WI WV WY'.split(' ');
+const REG = {
+  'Nationwide':ALL,
+  'West':['CA','OR','WA','NV'],
+  'Mountain West':['CO','ID','MT','WY','UT'],
+  'Southwest':['AZ','NM','TX','OK'],
+  'South':['TX','OK','AR','LA','MS','AL','TN','KY'],
+  'Southeast':['FL','GA','SC','NC','AL','TN','MS','VA'],
+  'Sun Belt':['CA','AZ','NV','NM','TX','OK','LA','MS','AL','GA','FL','SC','NC','TN'],
+  'Midwest':['OH','IN','IL','MI','WI','MN','IA','MO','KS','NE','SD','ND'],
+  'Northeast':['ME','NH','VT','MA','RI','CT','NY','NJ','PA'],
+  'Mid-Atlantic':['NY','NJ','PA','DE','MD','DC','VA','WV']
+};
+const REG_KO = {'Nationwide':'전국','West':'서부','Mountain West':'산악서부','Southwest':'남서부','South':'남부','Southeast':'남동부','Sun Belt':'선벨트','Midwest':'중서부','Northeast':'동북부','Mid-Atlantic':'중부대서양'};
+const TYPE_KEYS = ['볼류메트릭','패널화','하이브리드','HUD·제조주택','3D프린팅·기술','현장시공(오프사이트 병행)','부품·기타'];
+function typeTags(c){
+  const s=(c.types||[]).join(' ').toLowerCase(); const out=new Set();
+  if(/volumetric|modular|foldable|park/.test(s)&&!/site-built/.test(s)) out.add('볼류메트릭');
+  if(/volumetric/.test(s)) out.add('볼류메트릭');
+  if(/panel/.test(s)) out.add('패널화');
+  if(/hybrid/.test(s)) out.add('하이브리드');
+  if(/hud|manufactured/.test(s)) out.add('HUD·제조주택');
+  if(/3d/.test(s)) out.add('3D프린팅·기술');
+  if(/site-built|offsite|modular\/offsite|modular \(project\)/.test(s)) out.add('현장시공(오프사이트 병행)');
+  if(/component|prefabricated/.test(s)) out.add('부품·기타');
+  if(!out.size) out.add('부품·기타');
+  return [...out];
+}
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fmtM=v=>v==null?null:(Math.abs(v)>=1000?'$'+(v/1000).toFixed(v>=10000?1:2)+'B':'$'+Math.round(v).toLocaleString()+'M');
+const fmtP=v=>v==null?null:v.toFixed(1)+'%';
+const badge=c=>c==='v'?'<span class="badge v">공시확인</span>':c==='e'?'<span class="badge e">추정</span>':'';
+const initials=n=>{const w=n.replace(/[^A-Za-z ]/g,'').trim().split(/\s+/);return (w[0]||'?')[0]+(w[1]?w[1][0]:'')};
+let D=window.__DATA__, STATES=window.__STATES__, loadedAt=null;
+const stateSet=c=>{const s=new Set();let rs=(c.regions||[]);if(rs.length>1)rs=rs.filter(r=>r!=='Nationwide');rs.forEach(r=>(REG[r]||[]).forEach(x=>s.add(x)));return s};
+const roleName=c=>ROLE_KO[c.primary];
+const color=c=>ROLE_C[c.primary]||'#64748b';
+
+/* ---------- map ---------- */
+function mapSVG(opts){
+  const o=Object.assign({pts:[],hl:null,hlColor:'#cfe0ff',showFac:[],big:false},opts);
+  const paths=Object.entries(STATES).map(([k,d])=>`<path class="st${o.hl?(o.hl.has(k)?' on':' dim'):''}" data-st="${k}" d="${d}"/>`).join('');
+  return `<svg viewBox="0 0 960 600" role="img" aria-label="미국 지도" style="--hl:${o.hlColor}">${paths}<g id="facs"></g><g id="mks"></g></svg>`;
+}
+function spread(pts){ // 동일/근접 좌표 분산
+  const seen=[];
+  pts.forEach(p=>{
+    let n=seen.filter(q=>Math.hypot(q.x-p.x0,q.y-p.y0)<9).length;
+    p.x=p.x0;p.y=p.y0;
+    if(n){const a=n*2.4,r=9+n*2.5;p.x=p.x0+Math.cos(a)*r;p.y=p.y0+Math.sin(a)*r;}
+    seen.push({x:p.x0,y:p.y0});
+  });
+}
+function renderHomeMap(list){
+  const host=$('#mapHost'); host.innerHTML=mapSVG({});
+  const g=$('#mks',host); const pts=list.filter(c=>c.hq&&c.hq.x!=null).map(c=>({c,x0:c.hq.x,y0:c.hq.y}));
+  spread(pts);
+  g.innerHTML=pts.map(p=>`<g class="mk${p.c.hq.conf==='l'?' low':''}" data-id="${p.c.id}" tabindex="0" role="link" aria-label="${esc(p.c.name)}" transform="translate(${p.x},${p.y})"><circle class="ring" r="12" stroke="${color(p.c)}"/><circle class="core" r="6.5" fill="${color(p.c)}"/></g>`).join('');
+  const tip=$('#tip'), card=$('.mapcard');
+  const show=(el,ev)=>{
+    const c=D.companies.find(x=>x.id===el.dataset.id); if(!c) return;
+    const hl=stateSet(c); $$('.st',host).forEach(s=>{s.classList.toggle('on',hl.has(s.dataset.st));s.classList.toggle('dim',!hl.has(s.dataset.st));});
+    host.style.setProperty('--hl',color(c)+'38');
+    $$('.mk',host).forEach(m=>m.classList.toggle('fade',m!==el));
+    const f=c.fin;
+    tip.innerHTML=`<h4>${esc(c.name)}</h4><div class="sub">${esc(c.hq.city)}${c.hq.conf==='l'?' · 위치 추정':''} · ${esc(roleName(c))}</div>
+      <div class="tags" style="margin:0">${c.roles.map(r=>`<span class="tag role" style="--c:${ROLE_C[r]}">${ROLE_KO[r]}</span>`).join('')}${typeTags(c).map(t=>`<span class="tag type">${t}</span>`).join('')}</div>
+      <dl><dt>사업지역</dt><dd>${(c.regions||[]).map(r=>REG_KO[r]||r).join(' · ')||'-'}</dd>
+      <dt>최근 매출</dt><dd>${f&&f.rev!=null?fmtM(f.rev)+' <span style="color:var(--ink3);font-weight:400">('+esc(f.fy.split(' ')[0])+')</span>':'미확인'}</dd>
+      <dt>영업이익률</dt><dd>${f&&f.margin!=null?fmtP(f.margin):'미확인'}</dd>
+      <dt>직원</dt><dd>${c.emp&&c.emp.v?esc(c.emp.v):'미확인'}</dd>
+      <dt>생산시설</dt><dd>${c.fac&&c.fac.count?esc(c.fac.count)+'개소':'미확인'}</dd></dl><div class="go">클릭하여 상세 보기 →</div>`;
+    const r=card.getBoundingClientRect(), m=el.getBoundingClientRect();
+    let x=m.left-r.left+m.width/2+18, y=m.top-r.top-8;
+    if(x+300>r.width) x=m.left-r.left-300-8; if(x<8)x=8;
+    const th=tip.offsetHeight||190; if(y+th>r.height-8) y=r.height-th-8; if(y<8)y=8;
+    tip.style.left=x+'px'; tip.style.top=y+'px'; tip.classList.add('show');
+    $$('.card').forEach(k=>k.classList.toggle('act',k.dataset.id===c.id));
+  };
+  const hide=()=>{ tip.classList.remove('show'); $$('.st',host).forEach(s=>s.classList.remove('on','dim')); $$('.mk',host).forEach(m=>m.classList.remove('fade')); $$('.card.act').forEach(k=>k.classList.remove('act')); };
+  $$('.mk',host).forEach(el=>{
+    el.addEventListener('mouseenter',e=>show(el,e)); el.addEventListener('mouseleave',hide);
+    el.addEventListener('focus',e=>show(el,e)); el.addEventListener('blur',hide);
+    el.addEventListener('click',()=>{location.hash='#/c/'+el.dataset.id});
+    el.addEventListener('keydown',e=>{if(e.key==='Enter')location.hash='#/c/'+el.dataset.id});
+  });
+}
+function renderDetailMap(c){
+  const host=$('#dMap'); const hl=stateSet(c);
+  host.innerHTML=mapSVG({hl,hlColor:color(c)+'38'});
+  const facs=(c.fac.list||[]).filter(f=>f.x!=null);
+  $('#facs',host).innerHTML=facs.map(f=>`<g class="fmk"><title>${esc(f.name)}</title><rect x="${f.x-4}" y="${f.y-4}" width="8" height="8" rx="2" fill="#16202e"/></g>`).join('');
+  if(c.hq&&c.hq.x!=null) $('#mks',host).innerHTML=`<g class="mk${c.hq.conf==='l'?' low':''}" transform="translate(${c.hq.x},${c.hq.y})"><title>${esc(c.name)} · ${esc(c.hq.city)}</title><circle class="ring" r="13" stroke="${color(c)}"/><circle class="core" r="7" fill="${color(c)}"/></g>`;
+}
+
+/* ---------- home ---------- */
+const F={q:'',role:'all',type:'all',reg:'all',sort:'default'};
+function match(c){
+  if(F.role!=='all'&&!c.roles.includes(F.role)) return false;
+  if(F.type!=='all'&&!typeTags(c).includes(F.type)) return false;
+  if(F.reg!=='all'&&!(c.regions||[]).includes(F.reg)) return false;
+  if(F.q){const t=(c.name+' '+c.legal+' '+(c.overview||'')+' '+(c.rolesRaw||'')).toLowerCase(); if(!t.includes(F.q.toLowerCase())) return false;}
+  return true;
+}
+function cardHTML(c){
+  const f=c.fin, col=color(c);
+  const m=(label,val,conf)=>`<div class="met"><span>${label}</span>${val?`<b>${val}</b>${badge(conf)}`:'<b class="na">미확인</b>'}</div>`;
+  return `<a class="card" data-id="${c.id}" href="#/c/${c.id}">
+    <div class="hd"><div class="av" style="background:${col}">${esc(initials(c.name))}</div><div><h3>${esc(c.name)}</h3><div class="legal">${esc(c.legal)} · ${esc(c.ownership||'')}</div></div></div>
+    <div class="tags">${c.roles.map(r=>`<span class="tag role" style="--c:${ROLE_C[r]}">${ROLE_KO[r]}</span>`).join('')}${typeTags(c).map(t=>`<span class="tag type">${t}</span>`).join('')}</div>
+    <div class="tags" style="margin-top:6px">${(c.regions||[]).slice(0,5).map(r=>`<span class="tag reg">${REG_KO[r]||r}</span>`).join('')}</div>
+    <p class="desc">${esc(c.overview)}</p>
+    <div class="mets">${m('최근 매출',f&&fmtM(f.rev),f&&f.conf)}${m(f&&f.opLabel==='영업이익'||!f?'영업이익률':'이익률(대용)',f&&fmtP(f.margin),f&&f.conf)}${m('직원',c.emp.v&&esc(c.emp.v),c.emp.conf)}${m('생산시설',c.fac.count&&esc(c.fac.count),c.fac.conf)}</div>
+  </a>`;
+}
+function filtered(){
+  let l=D.companies.filter(match);
+  if(F.sort==='rev') l=l.slice().sort((a,b)=>((b.fin&&b.fin.rev)||-1)-((a.fin&&a.fin.rev)||-1));
+  else if(F.sort==='name') l=l.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  return l;
+}
+function drawList(){
+  const l=filtered();
+  $('#grid').innerHTML=l.length?l.map(cardHTML).join(''):'<div class="empty">조건에 맞는 기업이 없습니다.</div>';
+  $('#cnt').textContent=`${l.length} / ${D.companies.length}개 기업`;
+  renderHomeMap(l);
+}
+function renderHome(){
+  const cs=D.companies, withFin=cs.filter(c=>c.fin&&c.fin.rev!=null).length;
+  const mk=D.market||[]; const size=mk.find(m=>/Market$/.test(m.Metric)), cagr=mk.find(m=>/CAGR/.test(m.Metric));
+  const roleCounts=Object.keys(ROLE_KO).map(r=>[r,cs.filter(c=>c.roles.includes(r)).length]).filter(x=>x[1]);
+  const regs=Object.keys(REG).filter(r=>cs.some(c=>(c.regions||[]).includes(r)));
+  $('#app').innerHTML=`
+  <section class="hero"><div><h1>미국 모듈러 주택 업체 동향</h1><p>제조·공급, 개발, 빌더, 종합건설 ${cs.length}개 기업의 위치·사업영역·재무·생산시설·프로젝트</p></div>
+    <div class="kpis"><div class="kpi"><b>${cs.length}</b><span>추적 기업</span></div><div class="kpi"><b>${withFin}</b><span>재무 확인 기업</span></div>
+    ${size?`<div class="kpi"><b>$${(size.Value/1000).toFixed(1)}B</b><span>${size.BaseYear} 미국 영구 모듈러 시장</span></div>`:''}${cagr?`<div class="kpi"><b>${cagr.Value}%</b><span>CAGR 전망 ~2030</span></div>`:''}</div></section>
+  <section class="mapcard"><div id="mapHost"></div><div class="mapnote">점에 마우스를 올리면 기업 정보와 사업 영역이 표시됩니다 · 점선 링=위치 추정</div>
+    <div class="legend">${Object.keys(ROLE_KO).map(r=>`<span><i style="background:${ROLE_C[r]}"></i>${ROLE_KO[r]}</span>`).join('')}</div><div id="tip" class="tip" role="tooltip"></div></section>
+  <section class="bar" style="flex-direction:column;align-items:stretch;gap:12px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input class="q" id="q" type="search" placeholder="기업명·키워드 검색" aria-label="검색"><span class="grow" style="flex:1"></span><span class="cnt" id="cnt"></span>
+      <select id="sort" aria-label="정렬"><option value="default">정렬: 기본</option><option value="rev">정렬: 매출 높은 순</option><option value="name">정렬: 이름순</option></select></div>
+    <div class="grp"><label>구분</label><div class="chips" data-f="role">${chips('role',[['all','전체'],...roleCounts.map(([r,n])=>[r,`${ROLE_KO[r]} ${n}`])])}</div></div>
+    <div class="grp"><label>모듈러 형태</label><div class="chips" data-f="type">${chips('type',[['all','전체'],...TYPE_KEYS.filter(t=>cs.some(c=>typeTags(c).includes(t))).map(t=>[t,t])])}</div></div>
+    <div class="grp"><label>사업 지역</label><div class="chips" data-f="reg">${chips('reg',[['all','전체'],...regs.map(r=>[r,REG_KO[r]])])}</div></div>
+  </section>
+  <section class="grid" id="grid"></section>`;
+  $('#q').value=F.q; $('#sort').value=F.sort;
+  $('#q').addEventListener('input',e=>{F.q=e.target.value;drawList()});
+  $('#sort').addEventListener('change',e=>{F.sort=e.target.value;drawList()});
+  $$('.chips').forEach(box=>box.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;F[box.dataset.f]=b.dataset.v;$$('.chip',box).forEach(x=>x.setAttribute('aria-pressed',x===b));drawList();}));
+  $('#grid').addEventListener('mouseover',e=>{const k=e.target.closest('.card');$$('.mk').forEach(m=>m.classList.toggle('act',k&&m.dataset.id===k.dataset.id));});
+  $('#grid').addEventListener('mouseleave',()=>$$('.mk.act').forEach(m=>m.classList.remove('act')));
+  drawList();
+}
+function chips(k,arr){return arr.map(([v,l])=>`<button class="chip" data-v="${esc(v)}" aria-pressed="${F[k]===v}">${esc(l)}</button>`).join('')}
+
+/* ---------- detail ---------- */
+const SRC_MAP={USM001:['SRC005','SRC008'],USM002:['SRC003','SRC004'],USM008:['SRC006'],USM029:['SRC007']};
+function renderDetail(id){
+  const c=D.companies.find(x=>x.id===id); if(!c){location.hash='#/';return;}
+  const f=c.fin, col=color(c);
+  const tile=(l,v,conf,sub)=>`<div class="tile"><span>${l}${badge(conf)}</span>${v?`<b>${v}</b>`:'<b class="na">미확인</b>'}${sub?`<small>${sub}</small>`:''}</div>`;
+  const srcs=(SRC_MAP[id]||[]).map(s=>(D.sources||[]).find(x=>x.SourceID===s)).filter(Boolean);
+  const fin=f?`<div class="tw"><table><thead><tr><th>회계기간</th><th>매출</th><th>${esc(f.opLabel||'영업이익')}</th><th>이익률</th><th>영업현금흐름</th><th>Capex</th><th>출처</th></tr></thead><tbody><tr>
+    <td>${esc(f.fy)}</td><td>${fmtM(f.rev)||'-'}</td><td>${fmtM(f.op)||'-'}</td><td>${fmtP(f.margin)||'-'}</td><td>${fmtM(f.cfo)||'-'}</td><td>${fmtM(f.capex)||'-'}</td><td><a href="${esc(f.src)}" target="_blank" rel="noopener" style="color:var(--accent)">링크↗</a></td></tr></tbody></table></div>${f.note?`<div class="note">${esc(f.note)}</div>`:''}`
+    :`<div class="note warn">${esc(c.finStatus||'재무 데이터 미확인')} — 비공개/미확인 항목은 0이 아닌 공란으로 표시합니다. ${c.finNote?esc(c.finNote):''}</div>`;
+  const projs=c.projects.length?`<div class="tw"><table><thead><tr><th>프로젝트</th><th>위치</th><th>시장</th><th>방식</th><th>규모</th><th>단계</th></tr></thead><tbody>${c.projects.map(p=>`<tr><td><b>${p.src?`<a href="${esc(p.src)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(p.name)}↗</a>`:esc(p.name)}</b>${p.note?`<div style="color:var(--ink3);font-size:12px;margin-top:2px">${esc(p.note)}</div>`:''}</td><td>${esc([p.city,p.st].filter(x=>x&&x!=='-').join(', '))||'-'}</td><td>${esc(p.market||'-')}</td><td>${esc(p.method||'-')}</td><td>${esc(p.scale||'-')}</td><td>${esc(p.stage||'-')}</td></tr>`).join('')}</tbody></table></div>`
+    :`<div class="note">수집된 프로젝트 이력이 아직 없습니다(사업시행·발주·공사중 구분은 확인 후 반영). 공식 사이트: <a href="${esc(c.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(c.url)}</a></div>`;
+  const facRows=(c.fac.list||[]);
+  const facHTML=`<p style="margin:0 0 10px;color:var(--ink2)">${esc(c.fac.summary||'')}</p>
+    <dl class="kv"><dt>개소 수${badge(c.fac.conf)}</dt><dd>${c.fac.count?esc(c.fac.count):'미확인'}</dd></dl>
+    ${facRows.length?`<div class="tags" style="margin-top:12px">${facRows.map(r=>`<span class="tag type">■ ${esc(r.name)}</span>`).join('')}</div>`:''}
+    ${(c.xlFac||[]).length?`<div class="note">엑셀 원본 기록: ${c.xlFac.map(r=>`${esc(r.name)} (${r.count!=null?esc(r.count)+'개':'개수 미기재'}) — ${esc(r.note||'')}`).join('<br>')}</div>`:''}`;
+  $('#app').innerHTML=`
+  <div class="crumb"><button class="back" id="back">← 전체 기업</button><span>${esc(roleName(c))} · ${esc(c.id)}</span></div>
+  <div class="dhead"><div class="av" style="background:${col}">${esc(initials(c.name))}</div><div><h1>${esc(c.name)}</h1><div style="color:var(--ink2)">${esc(c.legal)} · ${esc(c.ownership||'')}${c.hq?' · '+esc(c.hq.city)+(c.hq.state&&c.hq.state!=='--'?', '+esc(c.hq.state):''):''}${c.hq&&c.hq.conf==='l'?' <span class="badge e">위치 추정</span>':''}</div></div></div>
+  <div class="tags">${c.roles.map(r=>`<span class="tag role" style="--c:${ROLE_C[r]}">${ROLE_FULL[r]}</span>`).join('')}${typeTags(c).map(t=>`<span class="tag type">${t}</span>`).join('')}${(c.regions||[]).map(r=>`<span class="tag reg">${REG_KO[r]||r}</span>`).join('')}</div>
+  <nav class="subnav">${[['ov','개요'],['sz','규모'],['fn','공시자료'],['pj','프로젝트'],['pf','포트폴리오'],['mt','모듈러 타입'],['fc','생산시설'],['sr','출처']].map(([k,l])=>`<a href="#/c/${c.id}" data-go="${k}">${l}</a>`).join('')}</nav>
+  <div class="dgrid"><div>
+    <section class="panel" id="ov"><h2>기업 개요 및 설명</h2><p style="margin:0">${esc(c.overview)}</p>${c.extra?`<div class="note">${esc(c.extra)}</div>`:''}${c.notes?`<div class="note">리서치 메모(엑셀): ${esc(c.notes)}</div>`:''}
+      <dl class="kv" style="margin-top:14px"><dt>구분</dt><dd>${c.roles.map(r=>ROLE_FULL[r]).join(' · ')}</dd><dt>사업 지역</dt><dd>${(c.regions||[]).map(r=>REG_KO[r]||r).join(' · ')}${c.regionsRaw?` <span style="color:var(--ink3)">(원문: ${esc(c.regionsRaw)})</span>`:''}</dd><dt>소유 형태</dt><dd>${esc(c.ownership||'-')}</dd><dt>엑셀 신뢰도</dt><dd>${esc(c.confidence||'-')}</dd>${c.brands&&c.brands.length?`<dt>주요 브랜드</dt><dd>${c.brands.map(esc).join(', ')}</dd>`:''}</dl></section>
+    <section class="panel" id="sz"><h2>규모</h2><div class="tiles">
+      ${tile('최근 매출',f&&fmtM(f.rev),f&&f.conf,f&&esc(f.fy))}
+      ${tile(f&&f.opLabel&&f.opLabel!=='영업이익'?'이익률(대용)':'영업이익률',f&&fmtP(f.margin),f&&f.conf,f&&f.op!=null?esc(f.opLabel||'영업이익')+' '+fmtM(f.op):'')}
+      ${tile('영업현금흐름',f&&fmtM(f.cfo),f&&f.cfo!=null?f.conf:null,f&&f.capex!=null?'Capex '+fmtM(f.capex):'')}
+      ${tile('직원 규모',c.emp.v&&esc(c.emp.v),c.emp.conf,esc(c.emp.note||''))}
+      ${tile('생산시설',c.fac.count&&esc(c.fac.count),c.fac.conf,'')}
+      ${tile('프로젝트 기록',String(c.projects.length)+'건',null,'수집 기준')}</div></section>
+    <section class="panel" id="fn"><h2>공시자료</h2>${fin}<dl class="kv" style="margin-top:12px"><dt>공시 상태</dt><dd>${esc(c.finStatus||'-')}</dd></dl></section>
+    <section class="panel" id="pj"><h2>프로젝트 정보</h2>${projs}</section>
+    <section class="panel" id="pf"><h2>포트폴리오</h2><div class="tags" style="margin:0 0 10px">${(c.portfolio||[]).map(p=>`<span class="tag type">${esc(p)}</span>`).join('')||'-'}</div><dl class="kv"><dt>엔드마켓</dt><dd>${(c.endMarkets||[]).map(esc).join(' · ')||'-'}</dd><dt>사업 역할(원문)</dt><dd>${esc(c.rolesRaw||'-')}</dd></dl></section>
+    <section class="panel" id="mt"><h2>모듈러 타입 정보</h2><div class="tags" style="margin:0 0 10px">${typeTags(c).map(t=>`<span class="tag type" style="font-size:12.5px">${t}</span>`).join('')}</div><dl class="kv"><dt>제조 방식(원문)</dt><dd>${esc(c.methodRaw||(c.types||[]).join('; ')||'-')}</dd><dt>세부 분류</dt><dd>${(c.types||[]).map(esc).join(' · ')}</dd></dl>
+      <div class="note">HUD-code 제조주택은 주/지방 건축법을 따르는 모듈러와 규제 체계가 다르므로 구분해 읽어야 합니다.</div></section>
+    <section class="panel" id="fc"><h2>생산시설 정보</h2>${facHTML}</section>
+    <section class="panel" id="sr"><h2>출처</h2><ul class="srcs"><li><div><small>공식/1차 출처</small><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.url)}</a></div></li>${f&&f.src?`<li><div><small>재무 출처</small><a href="${esc(f.src)}" target="_blank" rel="noopener">${esc(f.src)}</a></div></li>`:''}${srcs.map(s=>`<li><div><small>${esc(s.SourceTitle)} · ${esc(s.PublicationOrPeriod)}</small><a href="${esc(s.URL)}" target="_blank" rel="noopener">${esc(s.URL)}</a><small>${esc(s.Caveat||'')}</small></div></li>`).join('')}</ul></section>
+  </div>
+  <aside><div class="minimap"><section class="panel"><h2>위치 · 사업영역</h2><div class="mapcard" style="box-shadow:none"><div id="dMap"></div></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--ink2)"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${col};margin-right:5px"></i>본사/소재지</span><span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#16202e;margin-right:5px"></i>공장(개별 확인분)</span><span><i style="display:inline-block;width:12px;height:9px;background:${col}38;border:1px solid ${col}66;margin-right:5px"></i>사업 지역</span></div>
+    ${c.hq&&c.hq.x==null?`<div class="note warn">미국 내 소재지가 확인되지 않아 지도 마커를 표시하지 않았습니다 (${esc(c.hq.city)}).</div>`:''}</section></div></aside></div>`;
+  renderDetailMap(c);
+  $('#back').addEventListener('click',()=>{location.hash='#/'});
+  $$('.subnav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.getElementById(a.dataset.go);t&&t.scrollIntoView({behavior:'smooth',block:'start'});}));
+  window.scrollTo(0,0);
+}
+
+/* ---------- router ---------- */
+let scrollY0=0;
+function route(){
+  const h=location.hash||'#/'; const m=h.match(/^#\/c\/(\w+)/);
+  if(m){ scrollY0=window.scrollY||scrollY0; renderDetail(m[1]); }
+  else { renderHome(); requestAnimationFrame(()=>window.scrollTo(0,scrollY0)); }
+}
+window.addEventListener('hashchange',route);
+
+/* ---------- 일일 자동 업데이트 (매일 00:01 KST) ---------- */
+function kstParts(d){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});return p;}
+function msToNext(){ // 다음 00:01 KST까지 ms (KST=UTC+9, DST 없음)
+  const now=Date.now(), k=now+9*3600e3, day=Math.floor(k/86400e3)*86400e3; let t=day+60e3; if(t<=k) t+=86400e3; return t-k;
+}
+function setHeader(){
+  const g=(D&&D.generatedAt)||loadedAt; const el=$('#updAt');
+  el.textContent='데이터 기준: '+(g?new Date(g).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'})+' KST':'내장 데이터');
+  const m=Math.round(msToNext()/60000); $('#updNext').textContent=`자동 갱신: 매일 00:01 (KST) · 다음까지 ${Math.floor(m/60)}시간 ${m%60}분`;
+}
+async function refreshData(){
+  try{
+    if(location.protocol==='file:') throw 0;
+    const r=await fetch('data/data.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw 0;
+    const j=await r.json(); if(j&&j.companies&&j.companies.length){D=j;}
+  }catch(e){/* file:// 또는 서버 미배포 시 내장 데이터 유지 */}
+  loadedAt=new Date().toISOString(); setHeader();
+}
+function scheduleMidnight(){
+  setTimeout(async()=>{ await refreshData(); route(); scheduleMidnight(); }, msToNext()+1500);
+}
+(async function init(){ await refreshData(); route(); scheduleMidnight(); setInterval(setHeader,60000); })();
+})();
+</script>
+</body>
+</html>

@@ -140,7 +140,7 @@ footer{border-top:1px solid var(--line);color:var(--ink3);font-size:12px;padding
 <header class="top"><div class="wrap">
   <a class="brand" href="#/"><span class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>US Modular Housing Intelligence</a>
   <span class="sp"></span>
-  <div class="upd"><span class="dot"></span><div><span id="updAt">데이터 기준일 -</span><small id="updNext">자동 갱신: 매일 00:01 (KST)</small></div></div>
+  <div class="upd"><span class="dot"></span><div><span id="updAt">데이터 기준일 -</span><small id="updNext">자동 갱신: 매일 00:00 (KST)</small></div></div>
 </div></header>
 <main id="app" class="wrap" aria-live="polite"></main>
 <footer><div class="wrap">미국 모듈러 업체 동향 대시보드 · 모든 수치는 출처 URL 기준이며 <b>공시확인</b>/<b>추정</b>/<b>미확인</b>으로 구분 표기합니다. 공란은 0이 아니라 "미확인/비공개"를 의미합니다. 외부 공개 전 원문 검증이 필요합니다.</div></footer>
@@ -370,15 +370,15 @@ function route(){
 }
 window.addEventListener('hashchange',route);
 
-/* ---------- 일일 자동 업데이트 (매일 00:01 KST) ---------- */
+/* ---------- 일일 자동 업데이트 (매일 00:00 KST) ---------- */
 function kstParts(d){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});return p;}
-function msToNext(){ // 다음 00:01 KST까지 ms (KST=UTC+9, DST 없음)
-  const now=Date.now(), k=now+9*3600e3, day=Math.floor(k/86400e3)*86400e3; let t=day+60e3; if(t<=k) t+=86400e3; return t-k;
+function msToNext(){ // 다음 00:00 KST까지 ms (KST=UTC+9, DST 없음)
+  const now=Date.now(), k=now+9*3600e3, day=Math.floor(k/86400e3)*86400e3; let t=day; if(t<=k) t+=86400e3; return t-k;
 }
 function setHeader(){
   const g=(D&&D.generatedAt)||loadedAt; const el=$('#updAt');
   el.textContent='데이터 기준: '+(g?new Date(g).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'})+' KST':'내장 데이터');
-  const m=Math.round(msToNext()/60000); $('#updNext').textContent=`자동 갱신: 매일 00:01 (KST) · 다음까지 ${Math.floor(m/60)}시간 ${m%60}분`;
+  const m=Math.round(msToNext()/60000); $('#updNext').textContent=`자동 갱신: 매일 00:00 (KST) · 다음까지 ${Math.floor(m/60)}시간 ${m%60}분`;
 }
 async function refreshData(){
   try{
